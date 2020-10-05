@@ -17,11 +17,10 @@
 #ifndef HEADER_EXSP_EXEC_HPP
 #define HEADER_EXSP_EXEC_HPP
 
+#include <span>
 #include <vector>
 #include <string>
 #include <optional>
-
-#include "util/blob.hpp"
 
 namespace exsp {
 
@@ -56,7 +55,7 @@ public:
 
       @param blob The data passed on stdin
    */
-  void set_stdin(Blob const& blob);
+  void set_stdin(std::vector<uint8_t> blob);
 
   /** Start the external program
 
@@ -65,19 +64,16 @@ public:
   int exec();
 
   /** Access the stdout output of the program */
-  std::span<uint8_t const> get_stdout() const { return {m_stdout_vec.data(), m_stdout_vec.size()}; }
+  std::span<uint8_t const> get_stdout() const { return {reinterpret_cast<uint8_t const*>(m_stdout_vec.data()), m_stdout_vec.size()}; }
 
   /** Access the stderr output of the program */
-  std::span<uint8_t const> get_stderr() const { return {m_stderr_vec.data(), m_stderr_vec.size()}; }
-
-  std::vector<uint8_t>&& move_stdout() { return std::move(m_stdout_vec); }
-  std::vector<uint8_t>&& move_stderr() { return std::move(m_stderr_vec); }
+  std::span<uint8_t const> get_stderr() const { return {reinterpret_cast<uint8_t const*>(m_stderr_vec.data()), m_stderr_vec.size()}; }
 
     /** Access the stdout output of the program */
-  std::string_view get_stdout_txt() const { return {reinterpret_cast<char const*>(m_stdout_vec.data()), m_stdout_vec.size()}; }
+  std::string_view get_stdout_txt() const { return std::string_view(m_stdout_vec.begin(), m_stdout_vec.end()); }
 
   /** Access the stderr output of the program */
-  std::string_view get_stderr_txt() const { return {reinterpret_cast<char const*>(m_stderr_vec.data()), m_stderr_vec.size()}; }
+  std::string_view get_stderr_txt() const { return {m_stderr_vec.begin(), m_stderr_vec.end()}; }
 
   /** Returns a representation of the command call in simple string
       form, for visualitation only, no gurantee is made that arguments
@@ -93,10 +89,10 @@ private:
   std::vector<std::string> m_arguments;
   std::optional<std::string> m_working_directory;
 
-  std::vector<uint8_t> m_stdout_vec;
-  std::vector<uint8_t> m_stderr_vec;
+  std::vector<char> m_stdout_vec;
+  std::vector<char> m_stderr_vec;
 
-  Blob m_stdin_data;
+  std::vector<uint8_t> m_stdin_data;
 
 private:
   Exec (const Exec&);

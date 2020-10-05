@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/exec.hpp"
+#include "exec.hpp"
 
+#include <sstream>
 #include <iostream>
 #include <errno.h>
 #include <sstream>
@@ -26,9 +27,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <logmich/log.hpp>
-
-#include "util/raise_exception.hpp"
 
 namespace exsp {
 
@@ -56,9 +54,9 @@ Exec::set_working_directory(const std::string& path)
 }
 
 void
-Exec::set_stdin(Blob const& blob)
+Exec::set_stdin(std::vector<uint8_t> blob)
 {
-  m_stdin_data = blob;
+  m_stdin_data = std::move(blob);
 }
 
 int
@@ -70,7 +68,7 @@ Exec::exec()
 
   // FIXME: Bad, we potentially leak file descriptors
   if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0) {
-    raise_runtime_error("Exec:exec(): pipe failed");
+    throw std::runtime_error("Exec:exec(): pipe failed");
   }
 
   pid_t pid = fork();
@@ -86,7 +84,9 @@ Exec::exec()
     close(stdin_fd[0]);
     close(stdin_fd[1]);
 
-    raise_runtime_error("Exec::exec(): fork failed: " << strerror(errnum));
+    std::ostringstream out;
+    out << "Exec::exec(): fork failed: " << strerror(errnum);
+    throw std::runtime_error(out.str());
   }
   else if (pid == 0)
   { // child
@@ -117,7 +117,7 @@ Exec::exec()
       if (chdir(m_working_directory->c_str()) != 0)
       {
         int errnum = errno;
-        log_error("{}: failed change to directory: {}", *m_working_directory, strerror(errnum));
+        std::cerr << *m_working_directory << ": failed change to directory: " << strerror(errnum) << std::endl;
         _exit(EXIT_FAILURE);
       }
     }
@@ -137,7 +137,7 @@ Exec::exec()
     // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
     // execvp() only returns on failure
-    log_error("{}: {}", m_program, strerror(error_code));
+    std::cerr << m_program << ": " << strerror(error_code) << std::endl;
     _exit(EXIT_FAILURE);
   }
   else // if (pid > 0)
@@ -170,9 +170,9 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
   char buffer[4096];
 
   // write data to stdin
-  if (m_stdin_data)
+  if (!m_stdin_data.empty())
   {
-    if (write(stdin_fd, m_stdin_data.get_data(), m_stdin_data.size()) < 0)
+    if (write(stdin_fd, m_stdin_data.data(), m_stdin_data.size()) < 0)
     {
       close(stdin_fd);
       close(stdout_fd);
@@ -180,7 +180,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
       std::ostringstream out;
       out << "Exec::process_io(): stdin write failure: " << str() << ": " << strerror(errno);
-      raise_runtime_error(out.str());
+      throw std::runtime_error(out.str());
     }
   }
   close(stdin_fd);
@@ -216,11 +216,11 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
       std::ostringstream out;
       out << "Exec::process_io(): select() failure: " << str() << ": " << strerror(errno);
-      raise_runtime_error(out.str());
+      throw std::runtime_error(out.str());
     }
     else if (retval == 0)
     {
-      log_error("select() returned without results, this shouldn't happen");
+      std::cerr << "select() returned without results, this shouldn't happen" << std::endl;
     }
     else // retval > 0
     {
@@ -235,7 +235,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
           std::ostringstream out;
           out << "Exec::process_io(): stdout read failure: " << str() << ": " << strerror(errno);
-          raise_runtime_error(out.str());
+          throw std::runtime_error(out.str());
         }
         else if (len > 0) // ok
         {
@@ -259,7 +259,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
           std::ostringstream out;
           out << "Exec::process_io(): stderr read failure: " << str() << ": " << strerror(errno);
-          raise_runtime_error(out.str());
+          throw std::runtime_error(out.str());
         }
         else if (len > 0) // ok
         {
