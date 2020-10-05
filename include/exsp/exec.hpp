@@ -1,5 +1,5 @@
-// Galapix - an image viewer for large image collections
-// Copyright (C) 2008-2019 Ingo Ruhnke <grumbel@gmail.com>
+// exsp - Spawning subprocesses in C++
+// Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,14 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_UTIL_EXEC_HPP
-#define HEADER_GALAPIX_UTIL_EXEC_HPP
+#ifndef HEADER_EXSP_EXEC_HPP
+#define HEADER_EXSP_EXEC_HPP
 
 #include <vector>
 #include <string>
 #include <optional>
 
 #include "util/blob.hpp"
+
+namespace exsp {
 
 /** The Exec class allows to call external applications in a
     conventient vasion. */
@@ -100,6 +102,8 @@ private:
   Exec (const Exec&);
   Exec& operator= (const Exec&);
 };
+
+} // namespace exsp
 
 #endif
 

@@ -1,5 +1,5 @@
-// Galapix - an image viewer for large image collections
-// Copyright (C) 2008-2019 Ingo Ruhnke <grumbel@gmail.com>
+// exsp - Spawning subprocesses in C++
+// Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include <logmich/log.hpp>
 
 #include "util/raise_exception.hpp"
+
+namespace exsp {
 
 Exec::Exec(const std::string& program, bool absolute_path) :
   m_program(program),
@@ -286,5 +288,7 @@ Exec::str() const
 
   return out.str();
 }
+
+} // namespace exsp
 
 /* EOF */
