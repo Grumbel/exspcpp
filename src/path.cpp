@@ -35,8 +35,11 @@ find_exe(std::string_view name)
       std::filesystem::path exepath(p);
       exepath /= name;
       try {
-        auto perms = std::filesystem::status(exepath).permissions();
-        if ((perms & std::filesystem::perms::owner_exec) != std::filesystem::perms::none) {
+        auto const& status = std::filesystem::status(exepath);
+        if ((status.type() == std::filesystem::file_type::regular) &&
+            ((status.permissions() & std::filesystem::perms::owner_exec) !=
+             std::filesystem::perms::none))
+        {
           free(path);
           return exepath;
         }

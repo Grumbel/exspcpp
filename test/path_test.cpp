@@ -20,8 +20,8 @@
 
 TEST(PathTest, find_exe)
 {
-  auto maybe_path = exsp::find_exe("echo");
-  ASSERT_TRUE(maybe_path);
+  ASSERT_TRUE(exsp::find_exe("echo"));
+  ASSERT_FALSE(exsp::find_exe("does-not-exist"));
 }
 
 /* EOF */
