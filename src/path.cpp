@@ -24,6 +24,8 @@ namespace exsp {
 std::optional<std::filesystem::path>
 find_exe(std::string_view name)
 {
+  namespace fs = std::filesystem;
+
   char* path_c = getenv("PATH");
   if (!path_c) {
     return {};
@@ -32,13 +34,13 @@ find_exe(std::string_view name)
     char* path = strdup(path_c);
     char* state;
     for(char* p = strtok_r(path, delim, &state); p != nullptr; p = strtok_r(nullptr, delim, &state)) {
-      std::filesystem::path exepath(p);
+      fs::path exepath(p);
       exepath /= name;
       try {
-        auto const& status = std::filesystem::status(exepath);
-        if ((status.type() == std::filesystem::file_type::regular) &&
-            ((status.permissions() & std::filesystem::perms::owner_exec) !=
-             std::filesystem::perms::none))
+        auto const& status = fs::status(exepath);
+        if ((status.type() == fs::file_type::regular) &&
+            ((status.permissions() & fs::perms::owner_exec) !=
+             fs::perms::none))
         {
           free(path);
           return exepath;
