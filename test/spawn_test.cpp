@@ -21,6 +21,8 @@
 TEST(SpawnTest, spawn)
 {
   ASSERT_NO_THROW(exsp::spawn("/bin/sleep", {"99"}));
+  ASSERT_THROW(exsp::spawn("/404-dir/404-file"), std::runtime_error);
+  ASSERT_THROW(exsp::spawn("/"), std::runtime_error);
 }
 
 /* EOF */

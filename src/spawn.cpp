@@ -24,6 +24,36 @@ namespace exsp {
 
 void spawn(std::filesystem::path const& exe_name, std::vector<std::string> const& args)
 {
+  // fork()/exev() makes it tricky to catch failures in spawning, so
+  // just do some crude checks instead.
+  auto const& status = std::filesystem::status(exe_name);
+
+  switch (status.type()) {
+    case std::filesystem::file_type::regular: {
+      // ok
+      break;
+    }
+
+    case std::filesystem::file_type::not_found: {
+      std::ostringstream oss;
+      oss << exe_name << ": not found";
+      throw std::runtime_error(oss.str());
+    }
+
+    default: {
+      std::ostringstream oss;
+      oss << exe_name << ": invalid file type";
+      throw std::runtime_error(oss.str());
+    }
+  }
+
+  if ((status.permissions() & std::filesystem::perms::owner_exec) == std::filesystem::perms::none) {
+    std::ostringstream oss;
+    oss << exe_name << ": not executable";
+    throw std::runtime_error(oss.str());
+  }
+
+  // do the actual spawning
   pid_t pid = fork();
   if (pid < 0) {
     std::ostringstream out;
