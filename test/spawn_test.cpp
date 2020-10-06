@@ -25,4 +25,9 @@ TEST(SpawnTest, spawn)
   ASSERT_THROW(exsp::spawn("/"), std::runtime_error);
 }
 
+TEST(DISABLED_SpawnTest, open_path)
+{
+  exsp::open_path("/");
+}
+
 /* EOF */

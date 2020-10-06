@@ -22,6 +22,9 @@ namespace exsp {
 /** Launch exe_name */
 void spawn(std::filesystem::path const& exe_name, std::vector<std::string> const& args = {});
 
+/** Open a filemanager or webbrowser on the given path or URL */
+void open_path(std::filesystem::path const& path);
+
 } // namespace exsp
 
 /* EOF */

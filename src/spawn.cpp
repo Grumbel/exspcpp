@@ -20,6 +20,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "path.hpp"
+
 namespace exsp {
 
 void spawn(std::filesystem::path const& exe_name, std::vector<std::string> const& args)
@@ -71,6 +73,18 @@ void spawn(std::filesystem::path const& exe_name, std::vector<std::string> const
       std::cerr << "failed to execv(): " << strerror(errno) << std::endl;
       _exit(EXIT_FAILURE);
     }
+  }
+}
+
+void open_path(std::filesystem::path const& path)
+{
+  auto exe = find_exe("xdg-open");
+  if (!exe) {
+    std::ostringstream out;
+    out << "failed to find 'xdg-open'";
+    throw std::runtime_error(out.str());
+  } else {
+    spawn(*exe, {path.string()});
   }
 }
 
