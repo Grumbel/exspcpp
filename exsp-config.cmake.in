@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/exsp-config-version.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/exsp-targets.cmake")
+
+find_dependency(logmich)
+
+# EOF #

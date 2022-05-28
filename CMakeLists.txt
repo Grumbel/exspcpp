@@ -26,18 +26,22 @@ include(GNUInstallDirs)
 include(MaximumWarnings)
 include(ClangTidy)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CXX_EXTENSIONS OFF)
+
 file(GLOB EXSP_HEADER_SOURCES "include/exsp/*.hpp")
 file(GLOB EXSP_LIBRARY_SOURCES "src/*.cpp")
 file(GLOB TEST_EXSP_SOURCES test/*_test.cpp)
 
 add_library(exsp ${EXSP_LIBRARY_SOURCES})
-target_include_directories(exsp INTERFACE include/)
-target_include_directories(exsp PRIVATE include/exsp/)
+target_include_directories(exsp PRIVATE src/)
+target_include_directories(exsp PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/exsp>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 set_target_properties(exsp PROPERTIES
-  PUBLIC_HEADER "${EXSP_HEADER_SOURCES}"
-  CXX_STANDARD 20
-  CXX_STANDARD_REQUIRED ON
-  CXX_EXTENSIONS OFF)
+  PUBLIC_HEADER "${EXSP_HEADER_SOURCES}")
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/exsp.pc.in"
@@ -57,10 +61,6 @@ if(BUILD_TESTS)
 
   # build automatic tests
   add_executable(test_exsp ${TEST_EXSP_SOURCES})
-  set_target_properties(test_exsp PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF)
   target_compile_options(test_exsp PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(test_exsp
     GTest::GTest
@@ -72,5 +72,7 @@ if(BUILD_TESTS)
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND test_exsp)
 endif()
+
+include(ExportAndInstallLibrary)
 
 # EOF #
