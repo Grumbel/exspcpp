@@ -1,0 +1,67 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1652776076,
+        "narHash": "sha256-gzTw/v1vj4dOVbpBSJX4J0DwUR6LIyXo7/SuuTJp1kM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "04c1b180862888302ddfb2e3ad9eaa63afc60cf8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1653565689,
+        "narHash": "sha256-xdJ6bmPxDPIMItZJWsDxopPXUTAFPWMkNkyOOcptWSc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9bc0e974545d5bc4c24e1ed047be0dc4e30e494b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-21.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "tinycmmc": "tinycmmc"
+      }
+    },
+    "tinycmmc": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1653482755,
+        "narHash": "sha256-DeDWi5PpGRj14FByJhQvfzQ77po/y7QAYd5dmVY1TaM=",
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "rev": "2e80227395c6bccd215a5cf35872b86927ec5cec",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "type": "gitlab"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
