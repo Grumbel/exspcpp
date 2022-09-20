@@ -14,8 +14,10 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-      in rec {
-        packages = flake-utils.lib.flattenTree {
+      in {
+        packages = rec {
+          default = exspcpp;
+
           exspcpp = pkgs.stdenv.mkDerivation {
             pname = "exspcpp";
             version = "0.0.0";
@@ -25,14 +27,13 @@
               pkgs.pkg-config
             ];
             buildInputs = [
-              tinycmmc.defaultPackage.${system}
+              tinycmmc.packages.${system}.default
             ];
             propagatedBuildInputs = [
               pkgs.gtest
             ];
            };
         };
-        defaultPackage = packages.exspcpp;
       }
     );
 }
