@@ -16,7 +16,9 @@
 
 #include "spawn.hpp"
 
+#include <algorithm>
 #include <iostream>
+
 #include <string.h>
 #include <unistd.h>
 
