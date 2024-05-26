@@ -17,14 +17,9 @@
 cmake_minimum_required(VERSION 3.6)
 project(exsp VERSION 0.0.0)
 
-set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
-find_package(tinycmmc CONFIG)
-message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
-list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
+include(mk/cmake/TinyCMMC.cmake)
 
 include(GNUInstallDirs)
-include(MaximumWarnings)
-include(ClangTidy)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -61,7 +56,7 @@ if(BUILD_TESTS)
 
   # build automatic tests
   add_executable(test_exsp ${TEST_EXSP_SOURCES})
-  target_compile_options(test_exsp PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(test_exsp PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_link_libraries(test_exsp
     GTest::GTest
     GTest::Main
@@ -73,6 +68,6 @@ if(BUILD_TESTS)
     COMMAND test_exsp)
 endif()
 
-include(ExportAndInstallLibrary)
+tinycmmc_export_and_install_library(exsp)
 
 # EOF #
