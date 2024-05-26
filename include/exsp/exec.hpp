@@ -17,6 +17,7 @@
 #ifndef HEADER_EXSP_EXEC_HPP
 #define HEADER_EXSP_EXEC_HPP
 
+#include <cstdint>
 #include <span>
 #include <vector>
 #include <string>
